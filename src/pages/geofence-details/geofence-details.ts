@@ -90,7 +90,6 @@ export class GeofenceDetailsPage {
     geofence.radius = this.radius;
     geofence.latitude = this.latLng.lat;
     geofence.longitude = this.latLng.lng;
-    geofence.transitionType = 1; // On Enter
 
     this.geofenceService.addOrUpdate(geofence).then(() => {
       this.navCtrl.pop();

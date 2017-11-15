@@ -54,6 +54,7 @@ export class GeofenceServiceProvider {
   }
 
   create(attributes: any): any {
+    var sound = this.plt.is('android') ? 'file://assets/sound.mp3' : 'file://assets/beep.caf';
     const defaultGeofence = {
       id: generateUUID(),
       latitude: 50,
@@ -62,10 +63,12 @@ export class GeofenceServiceProvider {
       transitionType: 3,
       notification: {
         id: this.getNextNotificationId(),
-        title: "Ionic geofence example",
+        title: "Geoalarm",
         text: "",
         icon: "res://ic_menu_mylocation",
         openAppOnClick: true,
+        vibration: [1000, 500, 1000],
+        sound
       },
     };
 

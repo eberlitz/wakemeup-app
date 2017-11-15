@@ -15,3 +15,18 @@ App to wake up the user when he arrives at some specific geographic location. Ba
 # Run in dev mode
 
 1. `ionic serve`
+
+# Run in android
+
+1. Connect your android in developer debug mode
+2. `ionic cordova run android`
+
+# Publicação
+
+1. Ajustar no `config.xml` os atributos version, android-version;
+2. Rodar `npm run build --prod --release`;
+
+## Android
+
+1. Rodar `ionic cordova build android --prod --release`;
+2. `open platforms/android/build/outputs/apk/`
