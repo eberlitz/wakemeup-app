@@ -4,7 +4,6 @@ import { NgModule, ErrorHandler } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
-import * as Leaflet from "leaflet";
 
 import { GeofenceDetailsPage } from "../pages/geofence-details/geofence-details";
 import { GeofenceListItemComponent } from "../components/geofence-list-item/geofence-list-item";

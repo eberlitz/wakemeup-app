@@ -1,7 +1,6 @@
 import { GeofenceServiceProvider } from './../../providers/geofence-service/geofence-service';
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
-// import { Geofence } from "@ionic-native/geofence";
+import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
 import { Geolocation } from '@ionic-native/geolocation';
 import { GeofenceDetailsPage } from '../geofence-details/geofence-details';
 
@@ -18,7 +17,8 @@ export class GeofenceListPage {
     public navCtrl: NavController,
     public navParams: NavParams,
     private geofenceService: GeofenceServiceProvider,
-    private geolocation: Geolocation
+    private geolocation: Geolocation,
+    public loadingCtrl: LoadingController
   ) {
   }
 
@@ -32,23 +32,29 @@ export class GeofenceListPage {
     }
   }
 
-  create() {
-    this.geolocation.getCurrentPosition({ timeout: 5e3 }).then((resp) => {
-      // resp.coords.latitude
-      // resp.coords.longitude
-      const geofence = this.geofenceService.create({
-        longitude: resp.coords.longitude,
-        latitude: resp.coords.latitude,
-      });
-
-      this.transitionToDetailsPage(geofence);
-
-    }).catch((error) => {
-      console.log('Error getting location', error);
+  async create() {
+    const loader = this.loadingCtrl.create({
+      content: "Please wait...",
+      dismissOnPageChange: true
     });
+    loader.present();
+    let [latitude, longitude] = [50, 50];
+    try {
+      const resp = await this.geolocation.getCurrentPosition({ timeout: 5e3, maximumAge: 1000 * 60 * 10 });
+      longitude = resp.coords.longitude;
+      latitude = resp.coords.latitude;
+    } catch (error) {
+      console.log('Error getting location', error);
+    }
+    const geofence = this.geofenceService.create({
+      longitude,
+      latitude
+    });
+    this.showDetails(geofence);
+    loader.dismiss();
   }
 
-  private transitionToDetailsPage(geofence: any): any {
+  private showDetails(geofence: any): any {
     this.navCtrl.push(GeofenceDetailsPage, {
       geofence
     })

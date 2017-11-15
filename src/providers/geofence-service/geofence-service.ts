@@ -1,26 +1,28 @@
+import { Platform } from 'ionic-angular';
 import { Geofence } from '@ionic-native/geofence';
-// import { Geofence } from '@ionic-native/geofence';
 import { Injectable } from '@angular/core';
-
-
 import { generateUUID } from '../../utils/uuid';
 
 @Injectable()
 export class GeofenceServiceProvider {
   private geofences = [];
-  constructor(private geofence: Geofence) {
+  constructor(
+    private geofence: Geofence,
+    public plt: Platform
+  ) {
     console.log('Hello GeofenceServiceProvider Provider');
   }
 
-  findAll() {
-    return Promise.resolve(this.geofences);
-    // return window.geofence.getWatched()
-    // .then((geofencesJson) => {
-    //   const geofences = JSON.parse(geofencesJson);
+  async findAll() {
+    if (this.usePlugin()) {
+      const geofencesJson = await this.geofence.getWatched();
+      this.geofences = JSON.parse(geofencesJson);
+    }
+    return this.geofences;
+  }
 
-    //   this.geofences = geofences;
-    //   return geofences;
-    // });
+  private usePlugin() {
+    return this.plt.is('cordova');
   }
 
   clone(geofence: Geofence) {
@@ -37,16 +39,18 @@ export class GeofenceServiceProvider {
     return undefined;
   }
 
-  removeAll() {
-    return this.geofence.removeAll().then(() => {
-      this.geofences.length = 0;
-    });
+  async removeAll() {
+    if (this.usePlugin()) {
+      await this.geofence.removeAll();
+    }
+    this.geofences.length = 0;
   }
 
-  remove(geofence) {
-    return this.geofence.remove(geofence.id).then(() => {
-      this.geofences.splice(this.geofences.indexOf(geofence), 1);
-    });
+  async remove(geofence) {
+    if (this.usePlugin()) {
+      await this.geofence.remove(geofence.id);
+    }
+    this.geofences.splice(this.geofences.indexOf(geofence), 1);
   }
 
   create(attributes: any): any {
@@ -68,18 +72,17 @@ export class GeofenceServiceProvider {
     return Object.assign(defaultGeofence, attributes);
   }
 
-  addOrUpdate(geofence: any): any {
-    return this.geofence.addOrUpdate(geofence)
-      .then(() => this.findById(geofence.id))
-      .then((found) => {
-        if (!found) {
-          this.geofences.push(geofence);
-        } else {
-          const index = this.geofences.indexOf(found);
-
-          this.geofences[index] = geofence;
-        }
-      });
+  async addOrUpdate(geofence: any) {
+    if (this.usePlugin()) {
+      await this.geofence.addOrUpdate(geofence);
+    }
+    const found = this.findById(geofence.id);
+    if (!found) {
+      this.geofences.push(geofence);
+    } else {
+      const index = this.geofences.indexOf(found);
+      this.geofences[index] = geofence;
+    }
   }
 
   private getNextNotificationId() {
