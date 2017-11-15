@@ -1,5 +1,4 @@
 import { GeofenceServiceProvider } from './../../providers/geofence-service/geofence-service';
-import { Geofence } from '@ionic-native/geofence';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
